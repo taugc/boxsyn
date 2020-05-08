@@ -1,13 +1,18 @@
 require(FactoMineR)
 require(ggplot2)
 require(missMDA)
-chromo<-read.table("chromos_screen_hittbl.clean.NA.tsv",colClasses=c(NULL,"factor","factor","factor","factor"), header=TRUE);
-chromos=chromo[2:5];
-cats = apply(chromos, 2, function(x) nlevels(as.factor(x)));
+#chromo<-read.table("chromo_hittbl.tsv",colClasses=c(NULL,rep("factor",25349)), header=TRUE);
+chromo<-read.table("chromo_hittbl.tsv",colClasses=c("character",rep("integer",25348)), header=TRUE);
+chromos=chromo[-1];
+#chromos=chromo[2:25349];
+#cats = apply(chromos, 2, function(x) nlevels(as.factor(x)));
+cats = apply(chromos, 2, function(x) nlevels(as.integer(x)));
 
-tab.disj <- imputeMCA(chromos,ncp=4)$tab.disj
-mcad4 <- MCA(chromos,tab.disj=tab.disj,graph=TRUE)
-HCPC(mcad4,kk=1000,nb.clust=-1);
+mcad4 <- PCA(chromos,graph=TRUE)
+#tab.disj <- imputeMCA(chromos,ncp=4)$tab.disj
+#mcad4 <- MCA(chromos,tab.disj=tab.disj,graph=TRUE)
+#HCPC(mcad4,kk=1000,nb.clust=-1);
+HCPC(mcad4);
 
 mcad4_vars_df = data.frame(mcad4$var$coord, Variable = rep(names(cats), cats));
 mcad4_obs_df = data.frame(mcad4$ind$coord);
@@ -98,19 +103,21 @@ pdf("mcad4.ellipses.pdf");
 plotellipses(mcad4,cex=0.005,magnify=200)
 dev.off()
 
-res=catdes(chromos,1);
-write.infile(res, file="catdesSb.txt", sep="\t");
+#res=catdes(chromos,1);
+#write.infile(res, file="catdesSb.txt", sep="\t");
 
-res=catdes(chromos,2);
-write.infile(res, file="catdesZm.txt", sep="\t");
+#res=catdes(chromos,2);
+#write.infile(res, file="catdesZm.txt", sep="\t");
 
-res=catdes(chromos,3);
-write.infile(res, file="catdesOs.txt", sep="\t");
+#res=catdes(chromos,3);
+#write.infile(res, file="catdesOs.txt", sep="\t");
 
-res=catdes(chromos,4);
-write.infile(res, file="catdesBd.txt", sep="\t");
+#res=catdes(chromos,4);
+#write.infile(res, file="catdesBd.txt", sep="\t");
 
-res=dimdesc(mcad4,axes=1:5);
+#res=dimdesc(mcad4,axes=1:5);
+res=dimdesc(mcad4,axes=1:2);
+#res=dimdesc(mcad4,proba=0.001);
 write.infile(res, file="dimdesc.txt", sep="\t");
 
 write.infile(mcad4$eig, file="eigenvalues.txt", sep="\t");
